@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+	<title>绘制分形(Fractal)</title>
+	<link rel="stylesheet" href="./style/themes/black/easyui.css" id="配色">
+	<link rel="stylesheet" href="./style/themes/icon.css">
+	<script src="./bower_components/jQuery/dist/jQuery.min.js"></script>
+	<script src="./style/jquery.easyui.min.js"></script>
+	<link rel="stylesheet" href="./style/index.css">
+</head>
+<body>
+	<div id="setBtn">
+		<a href="#" id="收起" class="easyui-linkbutton" style="width:46px">∨</a>
+		<select id="改配色">
+			<option value="black">黒</option>
+			<option value="white">白</option>
+		</select>
+	</div>
+	<div id="tabs" class="easyui-tabs">
+		<div title="帮助" id="tabs-0" class="setBox" data-options="iconCls:'icon-help'">
+			帮助选项卡
+			<div id="output"></div>
+		</div>
+		<div title="逃逸时间" id="tabs-1" class="setBox">
+			<table style="border:1px solid ; padding:5px;">
+				<tr>
+					<td align="left">
+						色相：
+						<input id="色相" class="easyui-slider" value=0 style="width:210px"
+						data-options="min:0,max:360,step:30,showTip:true"/><br>
+						色阶：
+						<input id="色阶" class="easyui-slider" value=3 style="width:210px"
+						data-options="min:0,max:7,step:1,showTip:true"/><br>
+						清晰度：
+						<input id="清晰度" class="easyui-slider" style="width:210px"
+						data-options="min:1,max:8,step:1,showTip:true" />
+					</td>
+					<td align="center">
+						<a href="#" id="undo" class="easyui-linkbutton" data-options="iconCls:'icon-undo',iconAlign:'top'">后退</a>
+						<a href="#" id="redo" class="easyui-linkbutton" data-options="iconCls:'icon-redo',iconAlign:'top'">前进</a>
+						<br>
+						<a href="#" id="huizhi" class="easyui-linkbutton" data-options="iconCls:'icon-reload',iconAlign:'top'">重绘</a>
+						<a href="#" id="reColor" class="easyui-linkbutton" data-options="iconCls:'icon-palette',iconAlign:'top'">重着色</a>
+						<br>
+						<a href="#" id="selectRange" class="easyui-linkbutton" data-options="iconCls:'icon-save',iconAlign:'top'">框选</a>
+						<a href="#" id="savePic" class="easyui-linkbutton" data-options="iconCls:'icon-save',iconAlign:'top'">保存为png</a>
+					</td>
+					<td valign="top">
+						类型：<select id="eTType"></select>
+						<br>
+						迭代次数：<input id="MaxIter" class="eTCS" type="number" value=512 max=10000>
+						终止误差：<input id="IterR" class="eTCS" type="number" value=2><br>
+						<p id="info"></p>
+						<span id="RC">
+							C=<input id="JR" class="eTCS" type="number" value=-0.74543>+<i>i</i>&nbsp;<input id="JC" class="eTCS" type="number" value=0.11301>
+						</span>
+						<!-- R=<input id="NovR" class="eTCS" type="number" value=1>
+						p=<input id="Novp" class="eTCS" type="number" value=3><br> -->
+						<span id="Newton">
+							n=<input id="NewtonN" class="eTCS" type="number" value=3>
+						</span>
+						<span id="Nova">
+							n=<input id="NovN" class="eTCS" type="number" value=3>
+							<br>
+							Z<sub>0</sub>&nbsp;=&nbsp;
+							<input id="NovaZR" class="eTCS" type="number" value=0>
+							+<i>i</i>&nbsp;
+							<input id="NovaZC" class="eTCS" type="number" value=0>
+							<br>
+							p&nbsp;&nbsp;=&nbsp;
+							<input id="NovapR" class="eTCS" type="number" value=0>
+							+<i>i</i>&nbsp;
+							<input id="NovapC" class="eTCS" type="number" value=0>
+							<br>
+							p=<input id="NovR" class="eTCS" type="number" value=1>
+							b=<input id="NovC" class="eTCS" type="number" value=0>
+						</span>
+					</td>
+					<td>
+						<a href="#" class="easyui-linkbutton"
+						width=48 height=68>16:9???</a>
+						<a href="#" class="easyui-linkbutton"
+						width=48 height=68>16:10</a>
+						<br>
+						<a href="#" class="easyui-linkbutton"
+						width=48 height=68>1:1</a>
+						<a href="#" class="easyui-linkbutton"
+						width=48 height=68>4:3</a>
+					</td>
+					<td>
+						<div id="msg">绘制时间:0s</div>
+						<div id="msgcol">上色时间:0s</div>
+						<button id="getLocal" >获取位置</button>
+						<div id="showLocal"></div>
+					</td>
+				</tr>
+				<tr>
+					<th align="center">参数1</th>
+					<th align="center">参数2</th>
+					<th align="center">参数3</th>
+					<th align="center">参数4</th>
+					<th align="center">信息面板</th>
+				</tr>
+			</table>
+		</div>
+		<div title="递归函数" id="tabs-2" class="setBox">
+			<table>
+				<tr>
+					<td>
+						<select id="DGType" onchange="递归参数(value)"></select>
+					</td>
+					<td>
+						递归次数:<input id="DGn" type="number">
+						<a href="#" class="easyui-linkbutton" onclick="DG('canvas');">绘制</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div title="文法构图" id="tabs-3" class="setBox">
+			<table>
+				<tr>
+					<td valign="top">
+					<div id="LS_tb">
+						<select id="LSType" onchange="文法参数(value)"></select>
+						<a href="#" class="easyui-linkbutton" onclick="append_LS()" data-options="iconCls:'icon-add',plain:true" ></a>
+						<a href="#" class="easyui-linkbutton" onclick="removeit_LS()" data-options="iconCls:'icon-remove',plain:true" ></a>
+						<a href="#" class="easyui-linkbutton" onclick="accept_LS()" data-options="iconCls:'icon-save',plain:true" ></a>
+						<a href="#" class="easyui-linkbutton" onclick="reject_LS()" data-options="iconCls:'icon-undo',plain:true" ></a>
+					</div>
+					<table id="LS_tt" class="easyui-datagrid"
+						style="width:330px;height:auto"
+						data-options=
+							"singleSelect:true,
+							toolbar:'#LS_tb',
+							onClickRow: onClickRow_LS"
+						>
+						<thead>
+							<tr>
+								<th field="LSRul" width=260 editor='text'>规则</th>
+								<th field="LSP" width=50 editor='numberbox'>权重</th>
+							</tr>
+						</thead>
+					</table>
+					</td>
+					<td valign="top">
+						<table id="LS_pg" class="easyui-propertygrid"
+							style="width:180px;height:auto"
+							data-options="
+									method:'get',
+									showGroup:true,
+									showHeader:false,
+									scrollbarSize:0
+							">
+						</table>
+					</td>
+					<td valign="top">
+						迭代次数:<input id="LSStep" class="easyui-numberbox LSCS"><br />
+						颜色:<input id="LSColor" class="LSCS" type="text"><br />
+						<a href="#" class="easyui-linkbutton" onclick="getLS();">绘制</a>
+					</td>
+				</tr>
+			</table>
+			<div zIndex=-1 id='svgb2'></div>
+		</div>
+		<div title="迭代函数" id="tabs-4" class="setBox">
+			<table>
+				<tr>
+					<td>
+						<div id="tb">
+							<select id="IFSType"></select>
+							<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="append()"></a>
+					        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="removeit()"></a>
+					        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="accept()"></a>
+					        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="reject()"></a>
+							<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="保存('cvsIFS');">
+							保存(后缀为png)</a>
+						</div>
+						<table id="IFS_dg" class="easyui-datagrid"
+							style="width:360px;height:auto"
+							data-options="toolbar: '#tb',singleSelect: true,onClickRow: onClickRow">
+							<thead>
+								<tr>
+									<th data-options="field:'a',width:50,editor:{type:'numberbox',options:{precision:4}}">a</th>
+									<!--<th field='a' width=50 editor={type:"numberbox",options:{precision:4}}>a</th>-->
+									<th data-options="field:'b',width:50,editor:{type:'numberbox',options:{precision:4}}">b</th>
+									<th data-options="field:'c',width:50,editor:{type:'numberbox',options:{precision:4}}">c</th>
+									<th data-options="field:'d',width:50,editor:{type:'numberbox',options:{precision:4}}">d</th>
+									<th data-options="field:'e',width:50,editor:{type:'numberbox',options:{precision:4}}">e</th>
+									<th data-options="field:'f',width:50,editor:{type:'numberbox',options:{precision:4}}">f</th>
+									<th data-options="field:'p',width:50,editor:{type:'numberbox',options:{precision:4}}">P</th>
+								</tr>
+							</thead>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div title="自动机" id="tabs-5" class="setBox">
+			<table>
+				<tr>
+					<td>
+						迭代次数：<input style="width:36px;" id="DLAIterNum" class="easyui-numberbox" data-options="min:1,max:1000,required:true" value=1>万次<br />
+						<a href="#" class="easyui-linkbutton" onclick="DLA('cvsDLA')">绘制</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div title="迭代(3D)" id="tabs-6" class="setBox">
+			<table>
+				<tr>
+					<td>
+						<div id="tb3D">
+							<select id="IFS3DType" onchange="迭代参数3D(value);"></select>
+							<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="append()"></a>
+					        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="removeit()"></a>
+					        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="accept()"></a>
+					        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="reject()"></a>
+						</div>
+						<table id="IFS_dg3D" class="easyui-datagrid"
+							style="width:360px;height:auto"
+							data-options="toolbar: '#tb3D',singleSelect: true,onClickRow: onClickRow">
+							<thead>
+								<tr>
+									<th data-options="field:'a',width:50,editor:{type:'numberbox',options:{precision:4}}">a</th>
+									<!--<th field='a' width=50 editor={type:"numberbox",options:{precision:4}}>a</th>-->
+									<th data-options="field:'b',width:50,editor:{type:'numberbox',options:{precision:4}}">b</th>
+									<th data-options="field:'c',width:50,editor:{type:'numberbox',options:{precision:4}}">c</th>
+									<th data-options="field:'d',width:50,editor:{type:'numberbox',options:{precision:4}}">d</th>
+									<th data-options="field:'e',width:50,editor:{type:'numberbox',options:{precision:4}}">e</th>
+									<th data-options="field:'f',width:50,editor:{type:'numberbox',options:{precision:4}}">f</th>
+									<th data-options="field:'p',width:50,editor:{type:'numberbox',options:{precision:4}}">P</th>
+								</tr>
+							</thead>
+						</table>
+					</td>
+					<td>
+						迭代次数：<input id="IFSPIterNum3D" class="easyui-numberbox" style="width:48px;" data-options="min:1,max:1000,required:true" value=50>万次<br />
+						压缩因子:<input id="IFSPS3D" class="easyui-numberbox" value=3 /><br>
+						<a href="#" class="easyui-linkbutton" onclick="d3();">绘制3D</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div id="tabsShow" class="easyui-tabs">
+		<div id="tab-0-show">
+		</div>
+		<div id="tab-1-show" width="100%">
+			<canvas id="cvsSel" onmousedown="mousedown(event)" onmouseup="mouseup();"></canvas>
+				<!-- 绘图画布要在选择画布之后 -->
+			<canvas id="canvas"></canvas>
+		</div>
+		<div id="tab-2-show">
+			<div id="DGsvgb"></div>
+		</div>
+		<div id="tab-3-show">
+			<div id='svgb'></div>
+		</div>
+		<div id="tab-4-show">
+			<canvas id="cvsIFS"></canvas>
+		</div>
+		<div id="tab-5-show">
+			<canvas id="cvsDLA"></canvas>
+		</div>
+		<div id="tab-6-show">
+			<div id="container"></div>
+		</div>
+	</div>
+</body>
+<script src="./modules/算法参数.js"></script>
+<script src="./controllers/index.js"></script>
+<script src="./controllers/复数运算库.js"></script>
+<script src="./controllers/逃逸时间.js"></script>
+<script src="./controllers/文法.js"></script>
+<script src="./controllers/迭代.js"></script>
+<script src="./controllers/递归.js"></script>
+<script src="./controllers/放大镜.js"></script>
+<script src="./controllers/文法数据表.js"></script>
+<script src="./controllers/迭代数据表.js"></script>
+<script src="./controllers/DLA.js"></script>
+<script src="./controllers/迭代3D.js"></script>
+<script src="./bower_components/threejs/build/three.min.js"></script>
+<script src="./bower_components/stats.js/build/stats.min.js"></script>
+</html>

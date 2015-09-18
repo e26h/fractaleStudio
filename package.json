@@ -1,0 +1,25 @@
+{
+  "name": "fractale-studio",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/e26h/fractaleStudio.git"
+  },
+  "keywords": [
+    "fractale"
+  ],
+  "author": "e26h",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/e26h/fractaleStudio/issues"
+  },
+  "homepage": "https://github.com/e26h/fractaleStudio#readme",
+  "devDependencies": {
+    
+  }
+}
