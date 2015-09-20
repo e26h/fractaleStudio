@@ -1,0 +1,83 @@
+@charset "utf-8";
+body{
+	background:black;
+	/* color:yellowgreen; */
+}
+/*
+input,select,button{
+	background:black;
+	color:yellowgreen;
+	border:1px solid gray;
+} */
+#sortable { list-style-type: none; margin: 0; padding: 0; }
+#sortable li { margin-bottom:2px;}
+/*
+#sortable li { margin: 0 2px 2px 2px; padding: 0.4em; padding-left: 1.5em;padding-top: 1px; font-size: 1em; height: 24px; }
+*/
+/*
+#sortable li span { position: absolute; margin-left: -1.3em; margin-top: 0.4em; }
+*/
+.LR{width:32px;}
+/*
+.LR{width:24px;}
+*/
+.LRp,.eTCS{width:48px;}
+.ifsCS{width:64px;}
+.LSCS{width:64px;}
+#trash {
+	float: right;
+	width: 32%;
+	min-height: 1em;
+	padding: 1%;
+}
+#trash h4 {
+	line-height: 16px;
+	margin: 0 0 0.4em;
+}
+#trash h4 .ui-icon { float: left; }
+#trash .gallery h5 { display: none; }
+#canvas{
+	border:1px solid yellow;
+	cursor:crosshair;
+	background:black;
+	z-index:0;
+}
+#cvsIFS{
+	/*position:absolute;*/
+	left:5px;
+	border:1px solid yellow;
+	background:black;
+	z-index:0;
+}
+#cvsSel{
+	position:absolute;
+	left:0px;
+	border:1px solid;
+	cursor:crosshair;
+	background:rgba(12,12,12,0);
+	z-index:100;
+}
+/*position:absolute;position:absolute;
+#opt{
+	position:absolute;left:0px;top:255px;
+}
+*/
+div{
+	background-color: transparent;
+}
+.setBox{
+	background:rgba(0,0,0,0.618);
+}
+#tabsShow{
+	position:fixed;
+	top:40px;
+	left:8px;
+	right:8px;
+	z-index:-10;
+}
+#setBtn{
+	position:fixed;
+	top:8px;
+	right:8px;
+	z-index:10;
+}
